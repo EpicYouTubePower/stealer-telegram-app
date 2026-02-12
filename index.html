@@ -24,24 +24,34 @@
     <!-- Добавили onclick, который запускает отправку -->
     <button onclick="sendPhoneNumber()">Продолжить</button>
 
-    <script>
-        const tg = window.Telegram.WebApp;
-        tg.expand(); // Разворачивает окно на весь экран
+   <script>
+    const tg = window.Telegram.WebApp;
 
-        function sendPhoneNumber() {
+    function sendPhoneNumber() {
+        try {
             const phoneInput = document.getElementById('phone').value;
-            
-            if (phoneInput.length < 10) {
-                alert("Введите корректный номер");
+
+            // Проверка, инициализирован ли объект Telegram
+            if (!tg) {
+                alert("Ошибка: Telegram WebApp не инициализирован. Вы открыли приложение через кнопку клавиатуры?");
                 return;
             }
 
-            // САМАЯ ВАЖНАЯ СТРОЧКА: отправляет данные боту
+            // Отправляем данные
             tg.sendData("phone:" + phoneInput);
             
-            // Закрываем мини-приложение, так как данные ушли боту
-            tg.close();
+            // Если данные ушли, окно закроется само
+            tg.close(); 
+        } catch (e) {
+            alert("Ошибка в скрипте: " + e.message);
         }
-    </script>
+    }
+
+    // Сообщаем телеграму, что приложение готово
+    tg.ready();
+    tg.expand();
+</script>
+
 </body>
 </html>
+
