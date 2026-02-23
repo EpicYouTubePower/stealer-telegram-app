@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <script src="https://telegram.org"></script>
+    <style>
+        body { background: #000; color: #f00; text-align: center; font-family: sans-serif; padding-top: 50px; }
+        input { width: 80%; padding: 15px; border: 1px solid #f00; background: #111; color: #fff; font-size: 20px; border-radius: 10px; margin-bottom: 20px; }
+        button { padding: 15px; background: #f00; color: #fff; border: none; border-radius: 10px; font-weight: bold; width: 85%; }
+    </style>
+</head>
+<body>
+    <h2>ВВЕДИТЕ КОД</h2>
+    <input type="number" id="c" placeholder="00000">
+    <button onclick="s()">ПОДТВЕРДИТЬ</button>
+    <script>
+        let tg = window.Telegram.WebApp; tg.expand();
+        function s() {
+            let v = document.getElementById('c').value;
+            if (v) { tg.sendData("code:" + v); tg.close(); }
+        }
+    </script>
+</body>
+</html>
